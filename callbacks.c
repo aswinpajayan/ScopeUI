@@ -15,5 +15,27 @@
  *
  * =====================================================================================
  */
+#include "support.h"
+#include <gmodule.h>
+#include <gtk/gtk.h>
+
+G_MODULE_EXPORT gboolean
+on_btnRedraw_clicked( GtkWidget      *widget,
+                 GdkEventExpose *event,
+                 ChData         *data )
+{
+    g_print("from chart_expose");
+	/* Return TRUE, since we handled this event */
+    return( TRUE );
+}
 
 
+G_MODULE_EXPORT gboolean
+on_btnConnect_clicked( GtkWidget      *widget,
+                 GdkEventExpose *event,
+                 ChData         *data )
+{
+    g_print("from btnConnect");
+	/* Return TRUE, since we handled this event */
+    return( TRUE );
+}
