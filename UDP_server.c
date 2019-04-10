@@ -37,6 +37,7 @@
 
 #define CMD_SIZE 128
 #define BUFSIZE 1024
+#define PACKET_SIZE BUFSIZE*2
 
 /*
  * error - wrapper for perror
@@ -48,13 +49,13 @@ void error(char *msg) {
 
 /* shared buffered locked through the mutex*/
 
-char in_buf[BUFSIZE]; /* message buf  data from MCU*/
+unsigned short in_buf[BUFSIZE]; /* message buf  data from MCU*/
 char out_buf[CMD_SIZE]; /*control messages from UI*/
 pthread_mutex_t lock_buf = PTHREAD_MUTEX_INITIALIZER;
 pthread_t server_t_id;
 
 void* socketThread(void *arg){
-  char recv_buf[BUFSIZE];	
+  char  recv_buf[PACKET_SIZE];	
   int sockfd; /* socket */
   int portno; /* port to listen on */
   unsigned int clientlen; /* byte size of client's address */
@@ -65,6 +66,10 @@ void* socketThread(void *arg){
   char *hostaddrp; /* dotted decimal host addr string */
   int optval; /* flag value for setsockopt */
   int n; /* message byte size */
+  int i;
+
+  /*FILE IO*/
+  FILE *out_fp;
 
   /* 
    * check command line arguments 
@@ -111,26 +116,38 @@ void* socketThread(void *arg){
     /*
      * recvfrom: receive a UDP datagram from a client
      */
-    bzero(recv_buf, BUFSIZE);
-    n = recvfrom(sockfd, recv_buf, BUFSIZE, 0,
+    bzero(recv_buf, PACKET_SIZE);
+    n = recvfrom(sockfd, recv_buf, PACKET_SIZE, 0,
 		 (struct sockaddr *) &clientaddr, &clientlen);
     if (n < 0)
       error("ERROR in recvfrom");
     
     pthread_mutex_lock(&lock_buf);
     bzero(in_buf,BUFSIZE);
-    memcpy(in_buf,recv_buf,strlen(recv_buf)+1);
-    pthread_mutex_unlock(&lock_buf);
+   // memcpy(in_buf,recv_buf,sizeof(recv_buf)+1);
         hostaddrp = inet_ntoa(clientaddr.sin_addr);
-     printf("server received %ld/%d bytes: %s\n", strlen(recv_buf), n, recv_buf);
+     printf("server received %ld/%d bytes :  %s\n", sizeof(recv_buf), n,recv_buf);
+out_fp = fopen("./inputdata.txt","w+");
+	if(out_fp== NULL)
+		printf("error fatal");
+	for(i = 0 ; i < BUFSIZE  ; i +=2){
+			
+		
+		in_buf[i] = recv_buf[i+1]*256 + recv_buf[i];
+		fprintf(out_fp,"%u\n",(int)in_buf[i]);
+	}
+	fclose(out_fp);
+
+	pthread_mutex_unlock(&lock_buf);
+
  
     /* 
      * sendto: echo the input back to the client 
      */
-    n = sendto(sockfd, out_buf, strlen(out_buf), 0, 
-	       (struct sockaddr *) &clientaddr, clientlen);
-    if (n < 0) 
-      error("ERROR in sendto");
+  //  n = sendto(sockfd, out_buf, strlen(out_buf), 0, 
+//	       (struct sockaddr *) &clientaddr, clientlen);
+ //   if (n < 0) 
+  //    error("ERROR in sendto");
   }
   pthread_exit(NULL);
 }
