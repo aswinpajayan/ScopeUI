@@ -36,8 +36,8 @@
 
 
 #define CMD_SIZE 128
-#define BUFSIZE 1024
-#define PACKET_SIZE BUFSIZE*2
+#define BUFSIZE 256
+#define PACKET_SIZE 512
 
 /*
  * error - wrapper for perror
@@ -126,11 +126,11 @@ void* socketThread(void *arg){
     bzero(in_buf,BUFSIZE);
    // memcpy(in_buf,recv_buf,sizeof(recv_buf)+1);
         hostaddrp = inet_ntoa(clientaddr.sin_addr);
-     printf("server received %ld/%d bytes :  %s\n", sizeof(recv_buf), n,recv_buf);
-out_fp = fopen("./inputdata.txt","w+");
+     	printf("server received %ld/%d bytes \n", sizeof(recv_buf), n);
+	out_fp = fopen("./inputdata.txt","w+");
 	if(out_fp== NULL)
 		printf("error fatal");
-	for(i = 0 ; i < BUFSIZE  ; i +=2){
+	for(i = 0 ; i < PACKET_SIZE  ; i +=2){
 			
 		
 		in_buf[i] = recv_buf[i+1]*256 + recv_buf[i];
