@@ -39,6 +39,9 @@
 #define BUFSIZE 256
 #define PACKET_SIZE 512
 
+#define PORT_NUMBER 50001
+
+
 /*
  * error - wrapper for perror
  */
@@ -74,8 +77,8 @@ void* socketThread(void *arg){
   /* 
    * check command line arguments 
    */
-  portno = atoi((char*)arg);
-
+  portno = atoi("50001");
+  printf("from socket thread , port number is : %d\n",portno);
   /* 
    * socket: create the parent socket 
    */
@@ -111,7 +114,7 @@ void* socketThread(void *arg){
    * main loop: wait for a datagram, then echo it
    */
   clientlen = sizeof(clientaddr);
-  while (1) {
+  /*while (1)*/ {
 
     /*
      * recvfrom: receive a UDP datagram from a client
@@ -134,7 +137,7 @@ void* socketThread(void *arg){
 			
 		
 		in_buf[i] = recv_buf[i+1]*256 + recv_buf[i];
-		fprintf(out_fp,"%u\n",(int)in_buf[i]);
+		fprintf(out_fp,"%u\n",in_buf[i]);
 	}
 	fclose(out_fp);
 
@@ -152,7 +155,7 @@ void* socketThread(void *arg){
   pthread_exit(NULL);
 }
 
-int main(int argc, char **argv) {
+int starter_main(int argc, char **argv) {
 	
  //test initialisation of command buffer 
  
@@ -167,7 +170,7 @@ int main(int argc, char **argv) {
 
 	pthread_create(&server_t_id,NULL,&socketThread,argv[1]);
 pthread_join(server_t_id,NULL);
-
+return 0;
 
 }
 
