@@ -19,7 +19,12 @@
 #include <gmodule.h>
 #include <gtk/gtk.h>
 #include "UDP_server.c"
+#include <semaphore.h>
+#include <pthread.h>
 
+pthread_t plotter_t_id;
+
+void* async_plotter_thread(void *arg);
 G_MODULE_EXPORT gboolean
 on_btnRedraw_clicked( GtkWidget      *widget,
                  GdkEventExpose *event,
@@ -32,18 +37,37 @@ on_btnRedraw_clicked( GtkWidget      *widget,
 
 
 G_MODULE_EXPORT gboolean
-on_btnConnect_clicked( GtkWidget      *widget,
-                 GdkEventExpose *event,
-                 ChData         *data )
-{
-    int port_number;	
+on_btnConnect_clicked( GtkWidget *widget, GdkEventExpose *event, ChData *data ){
+    char port_number[5];	
     g_print("from btnConnect");
+
+    sem_init(&new_data,0,1);  //initialise the semaphore 
+    /*this semaphore will report presence of new data*/
+
     g_print("initialising UDP_server");
     //test initialisation of command buffer 
-      	memcpy(out_buf,"TEST_COMMAND",12);
-        
-      	port_number = 50001;   //#define PORT_NUMBER 50001                                                         
-	pthread_create(&server_t_id,NULL,&socketThread,&port_number);
-        //pthread_join(server_t_id,NULL);
-	return(TRUE);
+    memcpy(out_buf,"TEST_COMMAND",12);
+    memcpy(port_number,"50001",5);   //#define PORT_NUMBER 50001  
+    pthread_create(&server_t_id,NULL,&socketThread,&port_number);
+
+    pthread_create(&plotter_t_id,NULL,&async_plotter_thread,NULL);
+    //pthread_join(server_t_id,NULL);
+    return(TRUE);
+}
+
+
+void* async_plotter_thread(void *arg){
+   while(1){
+	if(plotting_completed)
+		wait();
+	int i = 0;
+	pthread_mutex_lock(&lock_buf);
+	for(i = 0;i<BUFSIZE;i++){
+		g_print("%d \t",in_buf[i]);
 	}
+	pthread_mutex_unlock(&lock_buf);
+	plotting_completed = 1;
+   }
+   pthread_exit(NULL);
+}
+
