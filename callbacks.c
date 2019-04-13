@@ -59,7 +59,7 @@ on_btnConnect_clicked( GtkWidget *widget, GdkEventExpose *event, ChData *data ){
 void* async_plotter_thread(void *arg){
    while(1){
 	if(plotting_completed)
-		wait();
+		sleep(1);
 	int i = 0;
 	pthread_mutex_lock(&lock_buf);
 	for(i = 0;i<BUFSIZE;i++){
