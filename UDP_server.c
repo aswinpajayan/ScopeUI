@@ -33,7 +33,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <unistd.h>
-
+#include <semaphore.h>
 
 #define CMD_SIZE 128
 #define BUFSIZE 256
@@ -55,7 +55,13 @@ void error(char *msg) {
 unsigned short in_buf[BUFSIZE]; /* message buf  data from MCU*/
 char out_buf[CMD_SIZE]; /*control messages from UI*/
 pthread_mutex_t lock_buf = PTHREAD_MUTEX_INITIALIZER;
-pthread_t server_t_id;
+pthread_t server_t_id;  //mutex to lock the shared buffer
+
+sem_t new_data;	
+/*semaphore is used by socketThread to signal plotter thread about 
+ * arrival of new data*/
+int plotting_completed = 1;
+
 
 void* socketThread(void *arg){
   char  recv_buf[PACKET_SIZE];	
@@ -72,11 +78,14 @@ void* socketThread(void *arg){
   int i;
 
   /*FILE IO*/
-  FILE *out_fp;
+  //FILE *out_fp;
 
+  
   /* 
    * check command line arguments 
    */
+
+  printf("recieved argument is : %s\n",(char *)arg);  //just for debugging
   portno = atoi("50001");
   printf("from socket thread , port number is : %d\n",portno);
   /* 
@@ -114,47 +123,61 @@ void* socketThread(void *arg){
    * main loop: wait for a datagram, then echo it
    */
   clientlen = sizeof(clientaddr);
-  /*while (1)*/ {
+  while (1) {
 
     /*
      * recvfrom: receive a UDP datagram from a client
      */
-    bzero(recv_buf, PACKET_SIZE);
-    n = recvfrom(sockfd, recv_buf, PACKET_SIZE, 0,
-		 (struct sockaddr *) &clientaddr, &clientlen);
-    if (n < 0)
+  bzero(recv_buf, PACKET_SIZE);
+
+  //socket Thread acquires the semaphore
+  //this causes the plotter thread to wait till
+  //the sempahore new_data is cleared
+
+  if(plotting_completed){	  
+  	sem_wait(&new_data);
+  	sem_getvalue(&new_data,&i);
+  	printf("\nsemaphore acquired count : %d\n",i);
+  }
+
+  n = recvfrom(sockfd, recv_buf, PACKET_SIZE, 0,(struct sockaddr *) &clientaddr, &clientlen);
+  if (n < 0)
       error("ERROR in recvfrom");
     
-    pthread_mutex_lock(&lock_buf);
-    bzero(in_buf,BUFSIZE);
-   // memcpy(in_buf,recv_buf,sizeof(recv_buf)+1);
-        hostaddrp = inet_ntoa(clientaddr.sin_addr);
-     	printf("server received %ld/%d bytes \n", sizeof(recv_buf), n);
-	out_fp = fopen("./inputdata.txt","w+");
-	if(out_fp== NULL)
-		printf("error fatal");
-	for(i = 0 ; i < PACKET_SIZE  ; i +=2){
-			
-		
-		in_buf[i] = recv_buf[i+1]*256 + recv_buf[i];
-		fprintf(out_fp,"%u\n",in_buf[i]);
-	}
-	fclose(out_fp);
+  pthread_mutex_lock(&lock_buf);
+  bzero(in_buf,BUFSIZE);
+  hostaddrp = inet_ntoa(clientaddr.sin_addr);
+  printf("\nserver received %ld/%d bytes \n", sizeof(recv_buf), n);
+  //out_fp = fopen("./inputdata.txt","w+");
+  //if(out_fp== NULL)
+  	//printf("error fatal");
 
-	pthread_mutex_unlock(&lock_buf);
-
+  //repack the recieved byte array back to unsigned short
+  for(i = 0 ; i < PACKET_SIZE  ; i +=2){
+  	in_buf[(i>>1)] = recv_buf[i+1]*256 + recv_buf[i];
+  	//fprintf(out_fp,"%u\n",in_buf[i]);  //for debugging write the value on to a file
+  }
+  //fclose(out_fp);
+  plotting_completed = 0; //used as a flag for plot completion od new data
+  pthread_mutex_unlock(&lock_buf);
+  printf("mutex unlocked\n");
+  sem_post(&new_data);
+  sem_getvalue(&new_data,&i);
+  printf("sempaphore released count %d",i);
  
     /* 
      * sendto: echo the input back to the client 
      */
   //  n = sendto(sockfd, out_buf, strlen(out_buf), 0, 
-//	       (struct sockaddr *) &clientaddr, clientlen);
- //   if (n < 0) 
+  //	       (struct sockaddr *) &clientaddr, clientlen);
+  //   if (n < 0) 
   //    error("ERROR in sendto");
   }
   pthread_exit(NULL);
 }
 
+
+/*this function is just for testing the functionality of the code*/
 int starter_main(int argc, char **argv) {
 	
  //test initialisation of command buffer 
