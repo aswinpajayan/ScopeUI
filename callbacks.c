@@ -18,6 +18,7 @@
 #include "support.h"
 #include <gmodule.h>
 #include <gtk/gtk.h>
+#include "UDP_server.c"
 
 G_MODULE_EXPORT gboolean
 on_btnRedraw_clicked( GtkWidget      *widget,
@@ -35,7 +36,14 @@ on_btnConnect_clicked( GtkWidget      *widget,
                  GdkEventExpose *event,
                  ChData         *data )
 {
+    int port_number;	
     g_print("from btnConnect");
-	/* Return TRUE, since we handled this event */
-    return( TRUE );
-}
+    g_print("initialising UDP_server");
+    //test initialisation of command buffer 
+      	memcpy(out_buf,"TEST_COMMAND",12);
+        
+      	port_number = 50001;   //#define PORT_NUMBER 50001                                                         
+	pthread_create(&server_t_id,NULL,&socketThread,&port_number);
+        //pthread_join(server_t_id,NULL);
+	return(TRUE);
+	}
