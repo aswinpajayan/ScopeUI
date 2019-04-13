@@ -13,7 +13,7 @@ ui: $(OBJECTS)
 	$(CC) $(DEBUG) $(OBJECTS) $(LIBS) -o $@
 scopeUI.o: scopeUI_main.c support.h
 	$(CC) $(DEBUG) $(CFLAGS) -c $< -o $@
-callbacks.o: callbacks.c support.h
+callbacks.o: callbacks.c support.h UDP_server.c
 	$(CC) $(DEBUG) $(CFLAGS) -c $< -o $@
 clean:
 	rm -f *.o ui
