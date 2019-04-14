@@ -68,7 +68,7 @@ void* socketThread(void *arg){
   char *hostaddrp; /* dotted decimal host addr string */
   int optval; /* flag value for setsockopt */
   int n; /* message byte size */
-  int i;
+  int i,j;
 
   /*FILE IO*/
   FILE *out_fp;
@@ -127,16 +127,19 @@ void* socketThread(void *arg){
     pthread_mutex_lock(&lock_buf);
     bzero(in_buf,BUFSIZE);
    // memcpy(in_buf,recv_buf,sizeof(recv_buf)+1);
+        bzero(in_buf,BUFSIZE);
         hostaddrp = inet_ntoa(clientaddr.sin_addr);
      	printf("server received %ld/%d bytes \n", sizeof(recv_buf), n);
 	out_fp = fopen("./inputdata.txt","w+");
 	if(out_fp== NULL)
 		printf("error fatal");
-	for(i = 0 ; i < PACKET_SIZE  ; i +=2){
-			
-		
-		in_buf[i] = recv_buf[i+1]*256 + recv_buf[i];
-		fprintf(out_fp,"%u\n",in_buf[i]);
+	j=0;
+	for(i = 0 ; i < PACKET_SIZE  ; i++){
+		in_buf[j] = (recv_buf[i+1]<<8) & 0x0300;
+		in_buf[j] = (in_buf[j]) | (recv_buf[i] & 0xFF);
+		fprintf(out_fp,"%u\n",in_buf[j]);
+		i++;
+		j++;
 	}
 	fclose(out_fp);
 
