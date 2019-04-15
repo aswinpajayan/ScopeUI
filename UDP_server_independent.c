@@ -57,7 +57,7 @@ pthread_mutex_t lock_buf = PTHREAD_MUTEX_INITIALIZER;
 pthread_t server_t_id;
 
 void* socketThread(void *arg){
-  char  recv_buf[PACKET_SIZE];	
+  unsigned char  recv_buf[PACKET_SIZE];	
   int sockfd; /* socket */
   int portno; /* port to listen on */
   unsigned int clientlen; /* byte size of client's address */
@@ -135,8 +135,8 @@ void* socketThread(void *arg){
 		printf("error fatal");
 	j=0;
 	for(i = 0 ; i < PACKET_SIZE  ; i++){
-		in_buf[j] = (recv_buf[i+1]<<8) & 0x0300;
-		in_buf[j] = (in_buf[j]) | (recv_buf[i] & 0xFF);
+		in_buf[j] = (recv_buf[i+1]<<8) & 0x000000300;
+		in_buf[j] = (in_buf[j]) | (recv_buf[i] & 0x0000FF);
 		fprintf(out_fp,"%u\n",in_buf[j]);
 		i++;
 		j++;
