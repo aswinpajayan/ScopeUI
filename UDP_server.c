@@ -64,7 +64,7 @@ int plotting_completed = 1;
 
 
 void* socketThread(void *arg){
-  char  recv_buf[PACKET_SIZE];	
+  unsigned char  recv_buf[PACKET_SIZE];	
   int sockfd; /* socket */
   int portno; /* port to listen on */
   unsigned int clientlen; /* byte size of client's address */
@@ -75,7 +75,7 @@ void* socketThread(void *arg){
   char *hostaddrp; /* dotted decimal host addr string */
   int optval; /* flag value for setsockopt */
   int n; /* message byte size */
-  int i;
+  int i,j;
 
   /*FILE IO*/
   //FILE *out_fp;
@@ -153,8 +153,14 @@ void* socketThread(void *arg){
   	//printf("error fatal");
 
   //repack the recieved byte array back to unsigned short
-  for(i = 0 ; i < PACKET_SIZE  ; i +=2){
-  	in_buf[(i>>1)] = recv_buf[i+1]*256 + recv_buf[i];
+  j = 0;
+  for(i = 0 ; i < PACKET_SIZE  ; i ++){
+  	in_buf[j] = (recv_buf[i+1]<<8) & 0x000000300;
+		in_buf[j] = (in_buf[j]) | (recv_buf[i] & 0x0000FF);
+ 	//	fprintf(out_fp,"%u\n",in_buf[j]);
+ 		i++;
+ 		j++;
+
   	//fprintf(out_fp,"%u\n",in_buf[i]);  //for debugging write the value on to a file
   }
   //fclose(out_fp);
