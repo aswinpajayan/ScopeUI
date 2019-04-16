@@ -19,10 +19,10 @@
 #include <gmodule.h>
 #include <gtk/gtk.h>
 #include "UDP_server.c"
-#include <semaphore.h>
 #include <pthread.h>
 
 pthread_t plotter_t_id;
+
 
 void* async_plotter_thread(void *arg);
 G_MODULE_EXPORT gboolean
@@ -41,8 +41,6 @@ on_btnConnect_clicked( GtkWidget *widget, GdkEventExpose *event, ChData *data ){
     char port_number[5];	
     g_print("from btnConnect");
 
-    sem_init(&new_data,0,1);  //initialise the semaphore 
-    /*this semaphore will report presence of new data*/
 
     g_print("initialising UDP_server");
     //test initialisation of command buffer 
@@ -57,16 +55,21 @@ on_btnConnect_clicked( GtkWidget *widget, GdkEventExpose *event, ChData *data ){
 
 
 void* async_plotter_thread(void *arg){
+   int i = 0;
    while(1){
-	if(plotting_completed)
-		sleep(1);
-	int i = 0;
+        printf("starting to plot \n");
 	pthread_mutex_lock(&lock_buf);
+	printf("shared data locked by plotter thread\n");
 	for(i = 0;i<BUFSIZE;i++){
 		g_print("%d \t",in_buf[i]);
 	}
+	g_print("\n\n");
 	pthread_mutex_unlock(&lock_buf);
-	plotting_completed = 1;
+	printf("shared buf ready to recieve new data\n");
+	//suspend plotting till new data arrives 
+	//pthread_mutex_lock(&lock_plotter);
+	printf("waiting for new data .....\n");
+	pthread_cond_wait(&suspend_plotting,&lock_plotter);
    }
    pthread_exit(NULL);
 }
