@@ -52,58 +52,74 @@ static void do_drawing(cairo_t *cr)
 	//cairo_set_source_surface(cr,surface,0.0,0.0);
 	 //cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 //cairo_paint (cr);
+  int i;
   cairo_set_source_rgb(cr, 0, 0, 0);
-  cairo_set_line_width(cr, 0.5);
+  cairo_set_line_width(cr, 1);
  // cairo_translate (cr, 720/ 2, 480 / 2);
  //   cairo_scale (cr, ZOOM_X, -ZOOM_Y);
 
 
- int i, j;
-  for (i = 0; i <= glob.count - 1; i++ ) {
-      for (j = 0; j <= glob.count - 1; j++ ) {
-          cairo_move_to(cr, glob.coordx[i], glob.coordy[i]);
-          cairo_line_to(cr, glob.coordx[j], glob.coordy[j]);
-      }
-  }
-
-  glob.count = 0;
-//  cairo_move_to(cr, 0, 10);
-//cairo_move_to(cr, 30, 100);
-//cairo_move_to(cr,90, 10);
-//ndow_begin_draw_framecairo_move_to(cr, 0, 10);
-//cairo_rel_curve_to (cr, 0, 10, 20, 50, 5, 0);
- //cairo_set_source_rgb( cr, 0, 1, 0 );
-    //cairo_paint( cr );
-
+// int i, j;
+//  for (i = 0; i <= glob.count - 1; i++ ) {
+//      for (j = 0; j <= glob.count - 1; j++ ) {
+//          cairo_move_to(cr, glob.coordx[i], glob.coordy[i]);
+//          cairo_line_to(cr, glob.coordx[j], glob.coordy[j]);
+//      }
+//  }
+//
+//  glob.count = 0;
+////  cairo_move_to(cr, 0, 10);
+////cairo_move_to(cr, 30, 100);
+////cairo_move_to(cr,90, 10);
+////ndow_begin_draw_framecairo_move_to(cr, 0, 10);
+////cairo_rel_curve_to (cr, 0, 10, 20, 50, 5, 0);
+// //cairo_set_source_rgb( cr, 0, 1, 0 );
+//    //cairo_paint( cr );
+//
+////cairo_set_source_rgb(cr, 0, 0, 0);
+////cairo_rel_curve_to (cr, 10, 10, 40, 60, 25, 35);
+////cairo_set_line_width (cr, 0.2);
+////  cairo_stroke(cr);    
+////    cairo_set_source_rgba (cr, 1, 0.2, 0.2, 0.6);
+//    cairo_stroke (cr);
+// cairo_save (cr);
+//      cairo_set_font_size (cr, 40);
+//      cairo_move_to (cr, 40, 60);
+//      cairo_set_source_rgb (cr, 0,0,0);
+//      cairo_show_text (cr, "Hello World");
+//   cairo_restore (cr);
+//  
+//     // cairo_destroy(cr);
+//     //cairo_save(cr);
+//     cairo_rectangle (cr, 0, 0, 100, 100);
+//cairo_set_source_rgba (cr, 0, 1, 0, 0.80);
 //cairo_set_source_rgb(cr, 0, 0, 0);
-//cairo_rel_curve_to (cr, 10, 10, 40, 60, 25, 35);
-//cairo_set_line_width (cr, 0.2);
-//  cairo_stroke(cr);    
-//    cairo_set_source_rgba (cr, 1, 0.2, 0.2, 0.6);
-    cairo_stroke (cr);
- cairo_save (cr);
-      cairo_set_font_size (cr, 40);
-      cairo_move_to (cr, 40, 60);
-      cairo_set_source_rgb (cr, 0,0,0);
-      cairo_show_text (cr, "Hello World");
-   cairo_restore (cr);
-  
-     // cairo_destroy(cr);
-     //cairo_save(cr);
-     cairo_rectangle (cr, 0, 0, 100, 100);
-cairo_set_source_rgba (cr, 0, 1, 0, 0.80);
-cairo_set_source_rgb(cr, 0, 0, 0);
-cairo_set_line_width(cr, 0.5);
-cairo_fill (cr);
+//cairo_set_line_width(cr, 0.5);
+//cairo_fill (cr);
 //cairo_restore(cr);
 
-cairo_set_line_width(cr, 5);
-cairo_move_to (cr, 0, 0);
-cairo_line_to (cr, 300, 250);
-cairo_rel_line_to (cr, 200, 200);
-cairo_curve_to (cr, 250, 275,300,400,400,400);
-cairo_stroke(cr);
+//cairo_set_line_width(cr, 5);
+//cairo_move_to (cr, 0, 0);
+//cairo_line_to (cr, 300, 250);
+//cairo_rel_line_to (cr, 200, 200);
+//cairo_curve_to (cr, 250, 275,300,400,400,400);
+//cairo_stroke(cr);
 
+cairo_translate(cr,0,0);
+cairo_scale(cr,1,0.5);
+cairo_move_to(cr,0,512);
+cairo_line_to(cr,512,512);
+cairo_stroke(cr);
+cairo_move_to(cr,0,512);
+//cairo_line_to(cr,200,230);
+//cairo_line_to(cr,400,-230);
+//cairo_line_to(cr,450,200);
+for(i = 0; i < BUFSIZE; i ++){
+	cairo_line_to(cr,i,1024-in_buf[i]);
+}
+
+cairo_set_source_rgba (cr, 0, 1, 0, 0.80);
+cairo_stroke(cr);
 g_print("yayyy i redrew it  \n");
 }
 void on_draw_event(GtkWidget *widget, cairo_t *cr ,app_widgets *data)
