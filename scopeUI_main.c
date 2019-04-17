@@ -20,24 +20,12 @@
 #include <gtk/gtk.h>
 #include "support.h"
 
-static void
-print_hello (GtkWidget *widget,
-             gpointer   data)
-{
-  g_print ("Hello World\n");
-
-}
-
-
-int
-main (int   argc,
-      char *argv[])
-{
+int main (int   argc,char *argv[]){
   GtkBuilder *builder;
   GObject *window;
-  GObject *button;
   GError *error = NULL;
-  ChData     *data;
+
+  app_widgets *widgets = g_slice_new(app_widgets);
 
   gtk_init (&argc, &argv);
 
@@ -51,24 +39,21 @@ main (int   argc,
     }
 
   /* Connect signal handlers to the constructed widgets. */
-  window = gtk_builder_get_object (builder, "main_window");
-
-  /* Allocate data structure */
-    data = g_slice_new( ChData );
-
+  //get pointer to the main window
+  window = GTK_WIDGET(gtk_builder_get_object (builder, "main_window"));
     /* Get objects from UI */
-#define GW( name ) CH_GET_WIDGET( builder, name, data )
-    GW( main_window );
-    GW( chart_area );
-#undef GW
+    widgets->w_drawing_area = GTK_WIDGET(gtk_builder_get_object(builder,"DSO_screen"));
+    widgets->w_scale = GTK_WIDGET(gtk_builder_get_object(builder,"scale_voltage"));
+ //   widgets->btn_test = GTK_WIDGET(gtk_builder_get_object(builder,"btnConnect"));
 
     /* Connect signals */
-    gtk_builder_connect_signals( builder, data );
+    gtk_builder_connect_signals( builder ,widgets);
 
     /* Destroy builder, since we don't need it anymore */
     g_object_unref( G_OBJECT( builder ) );
-  
+  gtk_widget_show(window);   
   gtk_main ();
+  g_slice_free(app_widgets, widgets);
 
   return 0;
 }

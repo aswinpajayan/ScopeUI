@@ -5,9 +5,7 @@
   <object class="GtkWindow" id="main_window">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="has_default">True</property>
-    <property name="default_width">440</property>
-    <property name="default_height">250</property>
+    <signal name="button-press-event" handler="clicked_da" swapped="no"/>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
         <property name="visible">True</property>
@@ -35,9 +33,9 @@
             <property name="position_set">True</property>
             <property name="wide_handle">True</property>
             <child>
-              <object class="GtkDrawingArea">
-                <property name="width_request">250</property>
-                <property name="height_request">105</property>
+              <object class="GtkDrawingArea" id="DSO_screen">
+                <property name="width_request">480</property>
+                <property name="height_request">720</property>
                 <property name="visible">True</property>
                 <property name="app_paintable">True</property>
                 <property name="can_focus">False</property>
@@ -47,6 +45,7 @@
                 <property name="margin_bottom">5</property>
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
+                <signal name="draw" handler="on_draw_event" swapped="no"/>
               </object>
               <packing>
                 <property name="resize">True</property>
@@ -58,7 +57,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkScale">
+                  <object class="GtkScale" id="scale_voltage">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="margin_left">20</property>
@@ -135,6 +134,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btnExport_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
