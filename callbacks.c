@@ -53,7 +53,9 @@ static void do_drawing(cairo_t *cr)
 	 //cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 //cairo_paint (cr);
   int i;
-  cairo_set_source_rgb(cr, 0, 0, 0);
+  cairo_set_source_rgb( cr, 0, 0, 0 );
+  cairo_paint( cr );
+  cairo_set_source_rgb(cr, 1, 1, 1);
   cairo_set_line_width(cr, 1);
  // cairo_translate (cr, 720/ 2, 480 / 2);
  //   cairo_scale (cr, ZOOM_X, -ZOOM_Y);
@@ -215,7 +217,7 @@ on_btnConnect_clicked( GtkWidget *widget, GdkEventExpose *event, app_widgets *da
     memcpy(port_number,"50001",5);   //#define PORT_NUMBER 50001  
     pthread_create(&server_t_id,NULL,&socketThread,&port_number);
 
-    pthread_create(&plotter_t_id,NULL,&async_plotter_thread,NULL);
+    pthread_create(&plotter_t_id,NULL,&async_plotter_thread,data);
     //pthread_join(server_t_id,NULL);
     return(TRUE);
 }
@@ -223,6 +225,8 @@ on_btnConnect_clicked( GtkWidget *widget, GdkEventExpose *event, app_widgets *da
 
 void* async_plotter_thread(void *arg){
    int i = 0;
+   data_pointer ui_pointer;
+   ui_pointer = (data_pointer)arg;
    while(1){
         printf("starting to plot \n");
 	pthread_mutex_lock(&lock_buf);
@@ -230,7 +234,7 @@ void* async_plotter_thread(void *arg){
 	for(i = 0;i<BUFSIZE;i++){
 		g_print("%d \t",in_buf[i]);
 	}
-	g_print("\n\n");
+	gtk_widget_queue_draw(ui_pointer->w_drawing_area);
 	pthread_mutex_unlock(&lock_buf);
 	printf("shared buf ready to recieve new data\n");
 	//suspend plotting till new data arrives 
