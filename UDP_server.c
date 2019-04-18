@@ -35,8 +35,8 @@
 #include <unistd.h>
 
 #define CMD_SIZE 128
-#define BUFSIZE 256
-#define PACKET_SIZE 512
+#define BUFSIZE 512
+#define PACKET_SIZE 1024
 
 #define PORT_NUMBER 50001
 
