@@ -24,8 +24,11 @@
 //data structure to pass widgets to callback functions
 typedef struct{
 	GtkWidget *w_drawing_area;
-	GtkWidget *w_scale;
+	GtkWidget *w_scale_volt;
+	GtkWidget *w_lbl_marker;
 }app_widgets;
+
+typedef app_widgets *data_pointer;
 
 /* Convenience macros for obtaining objects from UI file */
 #define CH_GET_OBJECT( builder, name, type, data ) \
