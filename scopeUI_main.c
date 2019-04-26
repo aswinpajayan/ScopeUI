@@ -40,18 +40,21 @@ int main (int   argc,char *argv[]){
 
   /* Connect signal handlers to the constructed widgets. */
   //get pointer to the main window
-  window = GTK_WIDGET(gtk_builder_get_object (builder, "main_window"));
+  window = gtk_builder_get_object (builder, "main_window");
     /* Get objects from UI */
     widgets->w_drawing_area = GTK_WIDGET(gtk_builder_get_object(builder,"DSO_screen"));
-    widgets->w_scale = GTK_WIDGET(gtk_builder_get_object(builder,"scale_voltage"));
+    widgets->w_scale_volt = GTK_WIDGET(gtk_builder_get_object(builder,"scale_volt"));
+    widgets->w_lbl_marker = GTK_WIDGET(gtk_builder_get_object(builder,"lbl_marker"));
  //   widgets->btn_test = GTK_WIDGET(gtk_builder_get_object(builder,"btnConnect"));
-
+ //
+    gtk_widget_add_events(widgets->w_drawing_area,GDK_BUTTON_PRESS_MASK);
+gtk_widget_add_events(GTK_WIDGET(window),GDK_BUTTON_PRESS_MASK);
     /* Connect signals */
     gtk_builder_connect_signals( builder ,widgets);
 
     /* Destroy builder, since we don't need it anymore */
     g_object_unref( G_OBJECT( builder ) );
-  gtk_widget_show(window);   
+  gtk_widget_show(GTK_WIDGET(window));   
   gtk_main ();
   g_slice_free(app_widgets, widgets);
 
