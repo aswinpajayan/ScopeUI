@@ -29,6 +29,8 @@
 #define ZOOM_Y 100.0
 /*definitions for plotting ends here*/
 
+//#define DEBUG 1
+
 pthread_t plotter_t_id;
 
 struct {
@@ -83,7 +85,7 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 	cairo_stroke(cr);
 
 	/*___________move origin and plot adc data______*/
-	cairo_move_to(cr,0,512);
+	cairo_move_to(cr,0,1024-in_buf[0]);
 	for(i = 0; i < BUFSIZE; i ++){
 		cairo_line_to(cr,i,1024-in_buf[i]);
 	}
@@ -259,9 +261,11 @@ void* async_plotter_thread(void *arg){
         printf("starting to plot \n");
 	pthread_mutex_lock(&lock_buf);
 	printf("shared data locked by plotter thread\n");
-	//for(i = 0;i<BUFSIZE;i++){
-	//	g_print("%d \t",in_buf[i]);
-	//}
+	#if defined DEBUG
+		for(i = 0;i<BUFSIZE;i++){
+			g_print("%d\n",in_buf[i]);
+		}
+	#endif
 	gtk_widget_queue_draw(ui_pointer->w_drawing_area);
 	pthread_mutex_unlock(&lock_buf);
 	printf("shared buf ready to recieve new data\n");
