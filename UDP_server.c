@@ -164,12 +164,12 @@ void* socketThread(void *arg){
 	  pthread_mutex_unlock(&lock_plotter);
 	 
 	    /* 
-	     * sendto: echo the input back to the client 
+	     * sendto: send the  control signals backto MCU
 	     */
-	  //  n = sendto(sockfd, out_buf, strlen(out_buf), 0, 
-	  //	       (struct sockaddr *) &clientaddr, clientlen);
-	  //   if (n < 0) 
-	  //    error("ERROR in sendto");
+	   n = sendto(sockfd, out_buf, strlen(out_buf), 0, 
+	            (struct sockaddr *) &clientaddr, clientlen);
+	    if (n < 0) 
+	     error("ERROR in sendto");
   }
   pthread_exit(NULL);
 }
