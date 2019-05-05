@@ -32,6 +32,7 @@
 //#define DEBUG 1
 
 pthread_t plotter_t_id;
+int volts_per_div=3000,time_per_div = 250;
 
 struct {
   int count;
@@ -43,6 +44,13 @@ struct {
 void* async_plotter_thread(void *arg);
 
 void on_btnExport_clicked( GtkButton *widget, app_widgets *data ){
+	FILE *fp;
+	int i = 0;
+	fp = fopen("plot.csv","w+");
+	for(i = 0;i <BUFSIZE; i++){
+		fprintf(fp,"%d\n",in_buf[i]);
+	}
+	fclose(fp);
 	g_print("from btnExport's handler\n");
 }
 static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
@@ -68,10 +76,12 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 	cairo_stroke(cr);
 
 	for(i = 0 ; i < 512 ; i = i + 64){
-		cairo_move_to(cr,0,i);
-		cairo_line_to(cr,512,i);
-		cairo_move_to(cr,0,i+512);
-		cairo_line_to(cr,512,i+512);
+		if(i%128 == 0){
+			cairo_move_to(cr,0,i);
+			cairo_line_to(cr,512,i);
+			cairo_move_to(cr,0,i+512);
+			cairo_line_to(cr,512,i+512);
+		}
 		cairo_move_to(cr,i,0);
 		cairo_line_to(cr,i,1024);
 	}
@@ -101,6 +111,31 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 	cairo_move_to(cr,504,1024 - (out_buf[2] * 8));
 	cairo_line_to(cr,512,1024 - (out_buf[2] * 8));
 	cairo_stroke(cr);
+	
+
+	/*____________displaying volts per division________*/
+	cairo_text_extents_t extents;
+
+	char *disp_value;
+	double x,y;
+
+	cairo_select_font_face (cr, "Oswald",
+    	CAIRO_FONT_SLANT_NORMAL,
+    	CAIRO_FONT_WEIGHT_NORMAL);
+
+	cairo_set_line_width(cr, 7);
+	cairo_set_font_size (cr, 18);
+	cairo_scale(cr,0.5,1.0);
+	//cairo_text_extents (cr, utf8, &extents);
+	//x = 128.0-(extents.width/2 + extents.x_bearing);
+	//y = 128.0-(extents.height/2 + extents.y_bearing);
+        disp_value = g_strdup_printf("%d mV/div",volts_per_div);	
+	cairo_move_to (cr, 12, 1000);
+	cairo_show_text (cr, disp_value);
+	disp_value = g_strdup_printf("%d us/div:",time_per_div);	
+	cairo_move_to (cr, 900, 1000);
+	cairo_show_text (cr, disp_value);
+	g_free(disp_value);
 	g_print("redraw complete  \n");
 }
 void on_draw_event(GtkWidget *widget, cairo_t *cr ,app_widgets *data){
@@ -117,6 +152,26 @@ void on_scale_volt_value_changed(GtkWidget *widget , app_widgets *data){
 	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
 	out_buf[0] = (char)gtk_range_get_value(GTK_RANGE(widget));
 	g_free(lbl_text);
+	switch(out_buf[0]){
+		case  1 :
+	       volts_per_div = 3000;
+	       break;
+		case  2 :
+	       volts_per_div = 1100;
+	       break;
+		case  3:
+	       volts_per_div = 430;
+	       break;
+		case  4:
+	       volts_per_div = 170;
+	       break;
+		case  5:
+	       volts_per_div = 75;
+	       break;
+		default :
+	       volts_per_div = 3000;
+	       break;
+	}
 }
 
 
@@ -127,6 +182,27 @@ void on_scale_time_value_changed(GtkWidget *widget , app_widgets *data){
 	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
 	out_buf[1] = (char)gtk_range_get_value(GTK_RANGE(widget));
 	g_free(lbl_text);
+	switch(out_buf[1]){
+		case  1:
+	       time_per_div = 5000;
+	       break;
+		case  2:
+	       time_per_div = 2500;
+	       break;
+		case  3:
+	       time_per_div = 1000;
+	       break;
+		case  4:
+	       time_per_div = 500;
+	       break;
+		case  5:
+	       time_per_div = 250;
+	       break;
+		default :
+	       time_per_div = 250;
+	       break;
+	}
+
 }
 
 void on_scale_trig_value_changed(GtkWidget *widget , app_widgets *data){
