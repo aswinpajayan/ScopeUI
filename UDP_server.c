@@ -34,7 +34,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#define CMD_SIZE 128
+#define CMD_SIZE 12
 #define BUFSIZE 512
 #define PACKET_SIZE 1024
 
