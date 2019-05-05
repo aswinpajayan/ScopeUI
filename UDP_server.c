@@ -55,6 +55,7 @@ unsigned short in_buf[BUFSIZE]; /* message buf  data from MCU*/
 char out_buf[CMD_SIZE]; /*control messages from UI*/
 pthread_mutex_t lock_buf = PTHREAD_MUTEX_INITIALIZER; //mutex to lock the shared buffer
 pthread_t server_t_id; 
+char tx_retry = 0;
 
 /* global variables which takes care of inter process communication*/
 pthread_cond_t suspend_plotting = PTHREAD_COND_INITIALIZER;
@@ -166,10 +167,13 @@ void* socketThread(void *arg){
 	    /* 
 	     * sendto: send the  control signals backto MCU
 	     */
+
+	for(tx_retry = 0;tx_retry < 10; tx_retry ++){
 	   n = sendto(sockfd, out_buf, strlen(out_buf), 0, 
 	            (struct sockaddr *) &clientaddr, clientlen);
 	    if (n < 0) 
 	     error("ERROR in sendto");
+	}
   }
   pthread_exit(NULL);
 }
