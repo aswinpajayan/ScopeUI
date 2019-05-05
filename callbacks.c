@@ -223,7 +223,6 @@ void on_btnRedraw_clicked( GtkButton *widget, app_widgets *data ){
 
 	/*____________sends a signal to invalidate the contents of drawing area
 	 * ___________this forces the draw signal to be emitted from drawing area
-
 	 * ___________handler for draw event (on_draw_event) runs and updates the
 	 * ___________drawing area contents____________________________________*/
 	gtk_widget_queue_draw(data->w_drawing_area);
