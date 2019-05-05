@@ -4,19 +4,21 @@
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkAdjustment" id="adj_time">
     <property name="lower">1</property>
-    <property name="upper">10</property>
+    <property name="upper">5</property>
+    <property name="value">5</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_trig">
     <property name="lower">1</property>
-    <property name="upper">10</property>
+    <property name="upper">128</property>
+    <property name="value">64</property>
     <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adj_volt">
     <property name="lower">1</property>
-    <property name="upper">10</property>
+    <property name="upper">5</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
@@ -29,7 +31,7 @@
         <property name="can_focus">False</property>
         <property name="title" translatable="yes">ee712_scope</property>
         <property name="show_close_button">True</property>
-	<signal name="button-press-event" handler="clicked" swapped="no"/>
+        <signal name="button-press-event" handler="clicked" swapped="no"/>
         <child>
           <placeholder/>
         </child>
@@ -127,6 +129,7 @@
                         <property name="adjustment">adj_volt</property>
                         <property name="inverted">True</property>
                         <property name="round_digits">0</property>
+                        <signal name="value-changed" handler="on_scale_volt_value_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -142,6 +145,7 @@
                         <property name="adjustment">adj_time</property>
                         <property name="inverted">True</property>
                         <property name="round_digits">0</property>
+                        <signal name="value-changed" handler="on_scale_time_value_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -156,6 +160,7 @@
                         <property name="adjustment">adj_trig</property>
                         <property name="inverted">True</property>
                         <property name="round_digits">1</property>
+                        <signal name="value-changed" handler="on_scale_trig_value_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
