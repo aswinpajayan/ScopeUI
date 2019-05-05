@@ -92,6 +92,15 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 
 	cairo_set_source_rgba (cr, 0, 1, 0, 0.80);
 	cairo_stroke(cr);
+
+	/*__________for displaying trigger________________*/
+	cairo_set_line_width(cr, 8);
+	cairo_set_source_rgba (cr, 1, 0, 0, 1);
+	cairo_move_to(cr,0,1024 - (out_buf[2] * 8));
+	cairo_line_to(cr,8,1024 - (out_buf[2] * 8));
+	cairo_move_to(cr,504,1024 - (out_buf[2] * 8));
+	cairo_line_to(cr,512,1024 - (out_buf[2] * 8));
+	cairo_stroke(cr);
 	g_print("redraw complete  \n");
 }
 void on_draw_event(GtkWidget *widget, cairo_t *cr ,app_widgets *data){
@@ -101,88 +110,33 @@ void on_draw_event(GtkWidget *widget, cairo_t *cr ,app_widgets *data){
   do_drawing(cr,WIDTH,HEIGHT);
 }
 
-//gtk_widget_get_allocated_width(widget_da),
-//gtk_widget_get_allocated_height(widget_da));
-//cairo_scale (cr, ZOOM_X, -ZOOM_Y);
-
-//to plot mouse clicks recieved 
-// int i, j;
-//  for (i = 0; i <= glob.count - 1; i++ ) {
-//      for (j = 0; j <= glob.count - 1; j++ ) {
-//          cairo_move_to(cr, glob.coordx[i], glob.coordy[i]);
-//          cairo_line_to(cr, glob.coordx[j], glob.coordy[j]);
-//      }
-//  }
-//
-//  glob.count = 0;
-////  cairo_move_to(cr, 0, 10);
-////cairo_move_to(cr, 30, 100);
-////cairo_move_to(cr,90, 10);
-////ndow_begin_draw_framecairo_move_to(cr, 0, 10);
-//      ___________texts in cairo________________
-//      cairo_save(cr);
-//      cairo_set_font_size (cr, 40);
-//      cairo_move_to (cr, 40, 60);
-//      cairo_set_source_rgb (cr, 0,0,0);
-//      cairo_show_text (cr, "Hello World");
-//   	cairo_restore (cr);
-//  
-//     cairo_rectangle (cr, 0, 0, 100, 100);
-//cairo_fill (cr);
-
-//cairo_curve_to (cr, 250, 275,300,400,400,400);
-//cairo_stroke(cr);
-//cairo_t *cr = gdk_cairo_create (data->w_drawing_area);
-//GdkRectangle da;            /* GtkDrawingArea size */
-//gdouble dx = 5.0, dy = 5.0; /* Pixels between each point */
-//gdouble i, clip_x1 = 0.0, clip_y1 = 0.0, clip_x2 = 0.0, clip_y2 = 0.0;
-//gint unused = 0;
+void on_scale_volt_value_changed(GtkWidget *widget , app_widgets *data){
+	char *lbl_text;
+     	gdouble pos=gtk_range_get_value(GTK_RANGE(widget));
+	lbl_text = g_strdup_printf ("Amp : %0.f ",pos);
+	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
+	out_buf[0] = (char)gtk_range_get_value(GTK_RANGE(widget));
+	g_free(lbl_text);
+}
 
 
-/* Define a clipping zone to improve performance */
-//cairo_rectangle (cr,
-//        event->area.x,
-//        event->area.y,
-//        event->area.width,
-//        event->area.height);
-//cairo_clip (cr);
+void on_scale_time_value_changed(GtkWidget *widget , app_widgets *data){
+	char *lbl_text;
+	gdouble pos=gtk_range_get_value(GTK_RANGE(widget));
+	lbl_text = g_strdup_printf ("time : %0.f ",pos);
+	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
+	out_buf[1] = (char)gtk_range_get_value(GTK_RANGE(widget));
+	g_free(lbl_text);
+}
 
-/* Determine GtkDrawingArea dimensions */
-
-/* Draw on a black background */
-//cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-//cairo_paint (cr);
-
-///* Change the transformation matrix */
-//cairo_translate (cr, 300 / 2, 500 / 2);
-//cairo_scale (cr, ZOOM_X, -ZOOM_Y);
-
-///* Determine the data points to calculate (ie. those in the clipping zone */
-//cairo_device_to_user_distance (cr, 10, 20);
-//cairo_clip_extents (cr, &clip_x1, &clip_y1, &clip_x2, &clip_y2);
-//cairo_set_line_width (cr, dx);
-
-///* Draws x and y axis */
-//cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
-//cairo_move_to (cr, clip_x1, 0.0);
-//cairo_line_to (cr, clip_x2, 0.0);
-//cairo_move_to (cr, 0.0, clip_y1);
-//cairo_line_to (cr, 0.0, clip_y2);
-//cairo_stroke (cr);
-
-///* Link each data point */
-//for (i = clip_x1; i < clip_x2; i += dx)
-//    cairo_line_to (cr, i, 0.03 * pow (i, 3));
-
-///* Draw the curve */
-//cairo_set_source_rgba (cr, 1, 0.2, 0.2, 0.6);
-//cairo_stroke (cr);
-//cairo_destroy (cr);
-    /* Return TRUE, since we handled this event */
-//gchar *lbl;
-//lbl = g_strdup_printf("test");
-//gtk_button_set_label(GTK_BUTTON(data->btn_test),lbl);
-//g_free(lbl)
+void on_scale_trig_value_changed(GtkWidget *widget , app_widgets *data){
+	char *lbl_text;
+	gdouble pos=gtk_range_get_value(GTK_RANGE(widget));
+	lbl_text = g_strdup_printf ("trig : %0.f ",pos);
+	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
+	out_buf[2] = (char)gtk_range_get_value(GTK_RANGE(widget));
+	g_free(lbl_text);
+}
 
 void on_da_clicked( GtkWidget *widget,GdkEventButton *event, app_widgets *data){
 	g_print("drawing area clicked");
