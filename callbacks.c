@@ -312,7 +312,7 @@ on_btnConnect_clicked( GtkWidget *widget, GdkEventExpose *event, app_widgets *da
 
     g_print("initialising UDP_server");
     //test initialisation of command buffer 
-    memcpy(out_buf,"TEST_COMMAND",12);
+    //memcpy(out_buf,"TEST_COMMAND",12);
     memcpy(port_number,"50001",5);   //#define PORT_NUMBER 50001  
     pthread_create(&server_t_id,NULL,&socketThread,&port_number);
 
