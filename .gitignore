@@ -8,4 +8,5 @@ server_prog
 *.pdf
 udpServer
 ui
+*.csv
 input_data.txt
