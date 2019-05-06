@@ -33,6 +33,8 @@
 
 pthread_t plotter_t_id;
 int volts_per_div=3000,time_per_div = 250;
+float mark1=5,mark2=0;
+int write_to_file = 0;
 
 struct {
   int count;
@@ -51,6 +53,7 @@ void on_btnExport_clicked( GtkButton *widget, app_widgets *data ){
 		fprintf(fp,"%d\n",in_buf[i]);
 	}
 	fclose(fp);
+	write_to_file = 1;
 	g_print("from btnExport's handler\n");
 }
 static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
@@ -94,6 +97,8 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 	cairo_line_to(cr,256,1024);
 	cairo_stroke(cr);
 
+	/*___________grid plot ends here_______________*/
+
 	/*___________move origin and plot adc data______*/
 	cairo_move_to(cr,0,1024-in_buf[0]);
 	for(i = 0; i < BUFSIZE; i ++){
@@ -102,6 +107,18 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 
 	cairo_set_source_rgba (cr, 0, 1, 0, 0.80);
 	cairo_stroke(cr);
+
+
+	/*___________for drawing marker___________________*/
+	cairo_set_line_width(cr, 2);
+	cairo_set_source_rgba (cr, 1, 1, 0, 1);
+	cairo_move_to(cr,0,mark1 * 2);
+	cairo_line_to(cr,512,mark1 * 2);
+	cairo_move_to(cr,0,mark2 * 2);
+	cairo_line_to(cr,512,mark2 * 2);
+	cairo_stroke(cr);
+
+
 
 	/*__________for displaying trigger________________*/
 	cairo_set_line_width(cr, 8);
@@ -117,7 +134,7 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 	cairo_text_extents_t extents;
 
 	char *disp_value;
-	double x,y;
+	//double x,y;
 
 	cairo_select_font_face (cr, "Oswald",
     	CAIRO_FONT_SLANT_NORMAL,
@@ -126,7 +143,7 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 	cairo_set_line_width(cr, 7);
 	cairo_set_font_size (cr, 18);
 	cairo_scale(cr,0.5,1.0);
-	//cairo_text_extents (cr, utf8, &extents);
+	//cairo_text_extents (cr, utf8, &extents); //you can use these to find exact start point
 	//x = 128.0-(extents.width/2 + extents.x_bearing);
 	//y = 128.0-(extents.height/2 + extents.y_bearing);
         disp_value = g_strdup_printf("%d mV/div",volts_per_div);	
@@ -135,6 +152,12 @@ static void do_drawing(cairo_t *cr,double WIDTH,double HEIGHT)
 	disp_value = g_strdup_printf("%d us/div:",time_per_div);	
 	cairo_move_to (cr, 900, 1000);
 	cairo_show_text (cr, disp_value);
+	/*___________code to export image , not working_____________
+	if(write_to_file = 1){
+		cairo_surface_write_to_png(cr,"capture.png");
+		write_to_file = 0;
+	}
+	____________________________________________________________*/
 	g_free(disp_value);
 	g_print("redraw complete  \n");
 }
@@ -152,6 +175,10 @@ void on_scale_volt_value_changed(GtkWidget *widget , app_widgets *data){
 	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
 	out_buf[0] = (char)gtk_range_get_value(GTK_RANGE(widget));
 	g_free(lbl_text);
+
+	/*_________________the following caliberation depends on your circuit
+	 * but still we can make it automatic by comparing amplifier out with 
+	 * a known vref , sampling and sampling the difference ______________*/
 	switch(out_buf[0]){
 		case  1 :
 	       volts_per_div = 3000;
@@ -182,6 +209,8 @@ void on_scale_time_value_changed(GtkWidget *widget , app_widgets *data){
 	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
 	out_buf[1] = (char)gtk_range_get_value(GTK_RANGE(widget));
 	g_free(lbl_text);
+	/*___________value is hardcoded, sampling freq = 512 kHz_____
+	 * __________ and we have 512 time points per row____________*/
 	switch(out_buf[1]){
 		case  1:
 	       time_per_div = 5000;
@@ -225,18 +254,29 @@ void clicked(GtkWidget *widget, GdkEventButton *event,
     app_widgets *data)
 
 {
+	double volts = 0;
 	char *lbl_text;
 	//g_print("test success clicked");
     if (event->button == 1) {
-        glob.coordx[glob.count] = event->x;
-        glob.coordy[glob.count++] = event->y;
+        mark1 = event->y;
 	lbl_text = g_strdup_printf ("<span font=\"10\" color=\"black\">" "X: %2.f  Y: %2.f""</span>",event->x,event->y);
 	//g_print(lbl_text);
 	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
+	volts = (mark2 - mark1) * volts_per_div /64;
+	lbl_text = g_strdup_printf ("<span font=\"10\" color=\"black\">" "milli_volts: %4.f ""</span>",volts);
+	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
 	//gtk_widget_queue_draw(data->w_lbl_marker);
+    }
+    if(event->button == 3){
+    	mark2 = event->y;
+	volts = (mark2 - mark1) * volts_per_div /64;
+	lbl_text = g_strdup_printf ("<span font=\"10\" color=\"black\">" "milli_volts: %4.f ""</span>",volts);
+	gtk_label_set_markup(GTK_LABEL(data->w_lbl_marker),lbl_text);
+
     }
 	
 
+	g_free(lbl_text);
 }
 
 
