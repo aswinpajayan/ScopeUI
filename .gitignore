@@ -5,7 +5,6 @@ testui_from_web.ui
 start_ui
 client_prog
 server_prog
-*.pdf
 udpServer
 ui
 *.csv
