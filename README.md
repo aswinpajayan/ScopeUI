@@ -10,4 +10,4 @@ small gtk + app to plot data recieved over wifi
  
       
 The program is multithreaded to address any dead lock issue. Cairo library is used for drawing ui 
-![Please read report/ee712_project_report](Screenshot from 2019-05-06 16-06-52.png)
+![Please read report/ee712_project_report](report/Screenshot from 2019-05-06 16-06-52.png)
