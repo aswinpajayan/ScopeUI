@@ -10,4 +10,22 @@ small gtk + app to plot data recieved over wifi
  
       
 The program is multithreaded to address any dead lock issue. Cairo library is used for drawing ui 
-![Please read report/ee712_project_report](report/Screenshot from 2019-05-06 16-06-52.png)
+![Please read report/ee712_project_report](report/ui_snap.png)
+
+##dependencies 
+	GTK3			sudo apt-get install libgtk-3-dev
+	glib			sudo apt-get install libglib2.0-0 
+	cairo			sudo apt-get install libcairo2
+	for all the build tools sudo apt-get install build-essentials
+
+
+##building and running the project 
+	use the make file provided in the project root
+	```make```
+	for building the project
+
+	```make run``` to launch the ui 
+
+	click on the connect button . now the ui can start recieving UDP packets 
+
+###code for Tiva board is available at [wifi DSO module project by aswinajayan](https://github.com/aswinpajayan/wifi-DSO-module)
