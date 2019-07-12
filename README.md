@@ -25,21 +25,14 @@ The program is multithreaded to address any dead lock issue. Cairo library is us
 
 
 # Building and running the project 
-	
+
 	use the make file provided in the project root
 	
-	
-	make
-	
-	for building the project
+	make 		- for building the project
 
-	make run
-	
-	to launch the ui 
+	make run 	- to launch the ui 
 
-	click on the connect button . now the ui can start recieving UDP packets 
-	
-	You will have to get the ip address of the machine and update it on the sender 
+	click on the connect button . now the ui can start recieving UDP packets . You will have to get the ip address of the machine and update it on the sender 
 
 ### code for Tiva board is available at [wifi-DSO-module project by aswinajayan](https://github.com/aswinpajayan/wifi-DSO-module)
 
