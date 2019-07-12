@@ -90,15 +90,13 @@
 	\maketitle
 	
 	\section{Abstract}
-	The project aims at creating wireless DSO modules for measuring differential voltage
-	signals with high common mode signals, observing signal variations and waveforms
-	and monitoring them from a remote location.
-	We implemented a circuit to get the differential output without inputs getting
-	overloaded by common mode signal. For this purpose, common mode signal is
-	attenuated to avoid the saturation of output, both the inputs are separately
-	attenuated and get the differential signal. But recognizing in the process of
-	attenuating the common mode signal, differential signal is also getting attenuated,
-	and so need to be amplified the differential signal.
+	The project aims at creating wireless DSO modules for measuring differential
+voltage signals with high common mode signals, observing signal variations and
+waveforms and monitoring them from a remote location. The common mode
+signal is attenuated and then applied to amplification stage.The amplified signal
+is sampled by using ADC and is tranferred to PC using UDP protocol. GUI at
+recieving end will plot the data sent. Based on functionalities on GUI, waveforms
+can be altered and analyzed.
 	\begin{figure}
 		\centering
 		\includegraphics[width=0.7\linewidth]{BlockDiagram}
