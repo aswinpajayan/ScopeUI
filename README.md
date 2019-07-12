@@ -13,7 +13,7 @@ small gtk + app to plot data recieved over wifi
 The program is multithreaded to address any dead lock issue. Cairo library is used for drawing ui 
 ![Please read report/ee712_project_report](report/ui_snap.png)
 
-## dependencies 
+# Dependencies 
 	
 	GTK3			  sudo apt-get install libgtk-3-dev
 	
@@ -24,7 +24,7 @@ The program is multithreaded to address any dead lock issue. Cairo library is us
 	for all the build tools   sudo apt-get install build-essentials
 
 
-## building and running the project 
+# Building and running the project 
 	
 	use the make file provided in the project root
 	
